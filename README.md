@@ -5,8 +5,8 @@ The system allows users to view services, hairstyles, promotions, and book appoi
 
 ### Technologies Used
 
-* PHP
-* Laravel Framework
+* PHP 8.4.0
+* Laravel Framework (Laravel 12)
 * MySQL
 * RESTful API
 * Laravel Sanctum (Authentication)
@@ -16,7 +16,6 @@ The system allows users to view services, hairstyles, promotions, and book appoi
 # Project Structure
 
 ```
-BE
 ├── app
 ├── bootstrap
 ├── config
@@ -34,34 +33,28 @@ BE
 ### 1. Clone repository
 
 ```
-git clone https://github.com/username/repository-name.git
+git clone https://github.com/khanhan0603/webdatlichlamtoc_BE.git
 ```
 
-### 2. Move to backend folder
-
-```
-cd BE
-```
-
-### 3. Install dependencies
+### 2. Install dependencies
 
 ```
 composer install
 ```
 
-### 4. Create environment file
+### 3. Create environment file
 
 ```
 cp .env.example .env
 ```
 
-### 5. Generate application key
+### 4. Generate application key
 
 ```
 php artisan key:generate
 ```
 
-### 6. Configure database
+### 5. Configure database
 
 Open `.env` file and update database configuration:
 
@@ -71,13 +64,13 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-### 7. Run migration and seed data
+### 6. Run migration and seed data
 
 ```
 php artisan migrate --seed
 ```
 
-### 8. Start the server
+### 7. Start the server
 
 ```
 php artisan serve
