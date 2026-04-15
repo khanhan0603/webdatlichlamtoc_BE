@@ -10,8 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 class PhuongTienDichVuController extends Controller
 {
     function index(String $id_dichvu){
-        $phuong_tien = PhuongTienDichVu::table('phuong_tien_dich_vus')
-            ->where('id_dich_vu','=',$id_dichvu)
+        $phuong_tien = PhuongTienDichVu::where('id_dichvu','=',$id_dichvu)
             ->get();
         return response()->json(
             [
@@ -24,6 +23,12 @@ class PhuongTienDichVuController extends Controller
         $uploadedItems = [];
         $errors = [];
 
+        // lấy thứ tự lớn nhất hiện tại của dịch vụ
+        $maxThuTu = PhuongTienDichVu::where('id_dichvu',$request->id_dichvu)
+            ->max('thutu');
+
+        $nextThuTu = (int)$maxThuTu + 1;
+        dd($maxThuTu,$nextThuTu);
         // Xử lý ảnh (tối đa 3)
         if($request->hasFile('anh')){
             foreach($request->file('anh') as $index => $anh){
@@ -39,7 +44,7 @@ class PhuongTienDichVuController extends Controller
                 $phuong_tien->loai = 'IMAGE';
                 $phuong_tien->link = Storage::disk('s3')->url($path);
                 $phuong_tien->id_dichvu = $request->id_dichvu;
-                $phuong_tien->thutu = $request->thutu_anh[$index] ?? ($index + 1); // fallback tự tăng
+                $phuong_tien->thutu = $nextThuTu++; // fallback tự tăng
                 $phuong_tien->save();
 
                 $uploadedItems[] = $phuong_tien;
@@ -61,7 +66,7 @@ class PhuongTienDichVuController extends Controller
                 $phuong_tien->loai = 'VIDEO';
                 $phuong_tien->link = Storage::disk('s3')->url($path);
                 $phuong_tien->id_dichvu = $request->id_dichvu;
-                $phuong_tien->thutu = $request->thutu_anh[$index] ?? ($index + 1); // fallback tự tăng
+                $phuong_tien->thutu = $nextThuTu++;; // fallback tự tăng
                 $phuong_tien->save();
 
                 $uploadedItems[] = $phuong_tien;
@@ -96,5 +101,97 @@ class PhuongTienDichVuController extends Controller
             'status'=>true,
             'data'=>$phuongtiendichvus
         ]);
+    }
+
+    public function delete(String $id){
+        $phuongtien = PhuongTienDichVu::find($id);
+
+        if(!$phuongtien){
+            return response()->json([
+                'status'=>false,
+                'message'=>'Không tìm thấy phương tiện dịch vụ!'
+            ],404);
+        }
+
+        if($phuongtien->link){
+
+            $url = $phuongtien->link;
+
+            $path = parse_url($url, PHP_URL_PATH);
+
+            $path = ltrim($path, '/');
+
+            $path = str_replace('storage/', '', $path);
+
+            Storage::disk('s3')->delete($path);
+        }
+
+        $phuongtien->delete();
+
+        return response()->json([
+            'status'=>true,
+            'message'=>'Xóa phương tiện dịch vụ thành công!'
+        ]);
+    }
+
+    public function update(Request $request,String $id){
+            $request->validate([
+                'loai'=>'required',
+                'id_dichvu'=>'required|exists:dich_vus,id',
+                'thutu'=>'required|numeric'
+            ],[
+                'loai.required'=>'Loại phương tiện dịch vụ được để trống!',
+                'id_dichvu.required'=>'Mã dịch vụ được để trống!',
+                'id_dichvu.exists'=>'Mã dịch vụ không tìm thấy!',
+                'thutu.required'=>'Số thứ tự dịch vụ được để trống!',
+                'thutu.numeric'=>'Số thứ tự dịch vụ phải là số!'
+            ]);
+
+            $result = PhuongTienDichVu::find($id);
+        
+            if(!$result){
+                return response()->json([
+                    'status'=>false,
+                    'message'=>'Không tìm thấy phương tiện dịch vụ!'
+                ],404);
+            }
+        
+            if($request->hasFile('anh')){
+        
+                if($result->link){
+                    //debug
+                    //dd($path);
+
+                    $url = $result->link;
+
+                    $path = ltrim(parse_url($url, PHP_URL_PATH), '/');
+
+                    Storage::disk('s3')->delete($path);
+                }
+        
+                $anh = $request->file('anh');
+        
+                $name = time().'_'.uniqid().'.'.$anh->getClientOriginalExtension();
+        
+                $path = Storage::disk('s3')->putFileAs(
+                    'phuong_tien_dich_vu',
+                    $anh,
+                    $name
+                );
+        
+                $result->link = Storage::disk('s3')->url($path);
+            }
+        
+            $result->loai = $request->loai;
+            $result->id_dichvu = $request->id_dichvu;
+            $result->thutu = $request->thutu;
+        
+            $result->save();
+        
+            return response()->json([
+                'status'=>true,
+                'message'=>'Cập nhật phương tiện dịch vụ thành công!',
+                'data'=>$result
+            ]);
     }
 }
