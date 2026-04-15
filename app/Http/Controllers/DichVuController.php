@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateDichVuRequest;
 use App\Models\DichVu;
+use App\Models\PhuongTienDichVu;
 use Symfony\Component\HttpFoundation\Request;
 
 use function PHPUnit\Framework\isEmpty;

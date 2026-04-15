@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateDichVuRequest;
 use App\Http\Requests\CreatePhuongTienDichVuRequest;
 use App\Models\PhuongTienDichVu;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Request;
 
 class PhuongTienDichVuController extends Controller
 {
@@ -74,6 +73,28 @@ class PhuongTienDichVuController extends Controller
             'message' => 'Thêm phương tiện dịch vụ thành công!',
             'data' => $uploadedItems,
             'errors' => $errors // file nào upload thất bại
+        ]);
+    }
+    public function indexPhuongTienByDichVu(Request $request){
+        $request->validate([
+            'id_dichvu'=>'required|exists:dich_vus,id'
+        ],[
+            'id_dichvu.required'=>'Mã dịch vụ không được để trống!',
+            'id_dichvu.exists'=>'Mã dịch vụ không tìm thấy!'
+        ]);
+        
+        $id_dichvu=$request->id_dichvu;
+
+        $phuongtiendichvus=PhuongTienDichVu::where('id_dichvu','=',$id_dichvu)->get();
+        if($phuongtiendichvus->isEmpty()){
+            return response()->json([
+                'status'=>false,
+                'message'=>'Không tìm thấy phương tiện dịch vụ!'
+            ],404);
+        }
+        return response()->json([
+            'status'=>true,
+            'data'=>$phuongtiendichvus
         ]);
     }
 }

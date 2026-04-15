@@ -102,6 +102,8 @@ Route::prefix('phuong-tiens')
             Route::post('','store');
             Route::delete('/{id}','delete');
             Route::put('/{id}','update');
+            //Hiển thị phương tiện theo dich vụ
+            Route::post('/dich-vu','indexPhuongTienByDichVu');
         });
     });
 Route::prefix('salon')
@@ -124,7 +126,7 @@ Route::prefix('booking')
         //Coi slot thời gian còn lại của 1 nhân viên tư vấn tại salon đó
         Route::post('/slot','showSlot');
         Route::middleware(['auth:sanctum','role:USER'])->group(function(){
-            //Chọn mã khuyến mãi
+            //Chọn mã khuyến mãi (**)
             Route::post('/khuyen-mai','showKhuyenMai');
             //Đặt lịch
             Route::post('','store');
