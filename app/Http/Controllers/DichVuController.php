@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateDichVuRequest;
 use App\Models\DichVu;
 use App\Models\PhuongTienDichVu;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Request;
 
 use function PHPUnit\Framework\isEmpty;
@@ -60,6 +61,20 @@ class DichVuController extends Controller
             ],404);
         }
         else{
+            //Kiểm tra có phương tiện dịch vụ ko, nếu có thì xóa phương tiện
+            $phuongtiendichvus=PhuongTienDichVu::where('id_dichvu',$id)->get();
+            
+            if($phuongtiendichvus->isNotEmpty()){
+                foreach($phuongtiendichvus as $pt){
+                    $url=$pt->link;
+                    $path=parse_url($url,PHP_URL_PATH);
+                    $path=ltrim($path,'/');
+                    $path=str_replace('storage/','',$path);
+                    Storage::disk('s3')->delete($path);
+
+                    $pt->delete();
+                }
+            }
             $dichvu->delete();
             return response()->json([
                 'status'=>true,

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateLoaiDichVuRequest;
+use App\Models\DichVu;
 use App\Models\LoaiDichVu;
 
 class LoaiDichVuController extends Controller
@@ -58,6 +59,14 @@ class LoaiDichVuController extends Controller
             ],404);
         }
         else{
+            //tìm kiếm dịch vụ thuộc loại dịch vụ
+            $dichvus=DichVu::where('id_loaidichvu','=',$id)->get();
+
+            if($dichvus->isNotEmpty()){
+                foreach($dichvus as $dv){
+                    $dv->delete();
+                }
+            }
             $result->delete();
             return response()->json([
                 'status'=>true,
