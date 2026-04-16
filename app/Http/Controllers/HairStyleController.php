@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateHairStyleRequest;
 use App\Http\Requests\UpdateHairStyleRequest;
 use App\Models\HairStyle;
+use Symfony\Component\HttpFoundation\Request;
 use Illuminate\Support\Facades\Storage;
 
 class HairStyleController extends Controller
@@ -153,5 +154,25 @@ class HairStyleController extends Controller
                 'data'=>$result
             ]);
         }
+    }
+
+    public function indexBySalon(Request $request){
+        $request->validate([
+            'id_salon'=>'exists:salons,id'
+        ],[
+            'id_salon.exists'=>'Mã salon không tìm thấy!'
+        ]);
+        $id_salon = $request->id_salon;
+        $hair_style=HairStyle::where('id_salon','=',$id_salon)->get();
+        if(!$hair_style){
+            return response()->json([
+                'status'=>false,
+                'message'=>'Không tìm thấy!'
+            ],404);
+        }
+        return response()->json([
+            'status'=>true,
+            'data'=>$hair_style
+        ]);
     }
 }

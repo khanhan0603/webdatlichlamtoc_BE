@@ -71,7 +71,7 @@ Route::prefix('hair-styles')
     ->group(function(){
         Route::get('','index');
         Route::get('/{id}','show');
-        //Lọc nhân viên theo chi nhánh(*)
+        //Lọc nhân viên theo chi nhánh(**)
         Route::post('/salon','indexBySalon');
         Route::middleware(['auth:sanctum','role:ADMIN'])->group(function(){
             Route::post('','store');
