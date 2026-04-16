@@ -74,7 +74,7 @@ class SalonController extends Controller
         if($hair_style){
             return response()->json([
                 'status'=>false,
-                'message'=>'Không thể xóa salon vì đang có liên kết với dữ liệu khác!'
+                'message'=>'Không thể xóa salon vì có chứa thông tin nhân viên tư vấn!'
             ],404);
         }
         else{
