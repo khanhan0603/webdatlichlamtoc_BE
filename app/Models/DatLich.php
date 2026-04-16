@@ -16,7 +16,7 @@ class DatLich extends Model
 
     protected $fillable = [
         'id_khachhang',
-        'id_stylist',
+        'id_hairstyle',
         'id_salon',
         'thoigian_hen',
         'id_khuyenmai',

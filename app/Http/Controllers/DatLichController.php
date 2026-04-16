@@ -107,8 +107,7 @@ class DatLichController extends Controller
             'date' => 'required|date|after_or_equal:today',
             'time' => 'required|date_format:H:i',
             'services' => 'required|array',
-            'services.*' => 'exists:dich_vus,id',
-            'id_khuyenmai' => 'exists:khuyen_mais,id',
+            'services.*' => 'exists:dich_vus,id'
         ],[
             'salon_id.required' => 'Mã salon không được để trống!',
             'salon_id.exists' => 'Mã salon không tồn tại!',
@@ -120,8 +119,7 @@ class DatLichController extends Controller
             'time.required' => 'Giờ đặt lịch không được để trống!',
             'time.date_format' => 'Giờ đặt lịch không hợp lệ!',
             'services.required' => 'Danh sách dịch vụ được để trống!',
-            'services.*.exists' => 'Mã dịch vụ không tìm thấy!',
-            'id_khuyenmai.exists' => 'Mã khuyến mãi không tồn tại!',
+            'services.*.exists' => 'Mã dịch vụ không tìm thấy!'
         ]);
 
         $userId = $request->user()->id;
@@ -154,7 +152,7 @@ class DatLichController extends Controller
                 'id_salon'=>$request->salon_id,
                 'id_hairstyle'=>$request->staff_id,
                 'thoigian_hen'=>$dateTime,
-                'id_khuyenmai'=>$khuyenMai->id,
+                'id_khuyenmai'=>$khuyenMai?->id,
                 'tongtien'=>0,
                 'trangthai'=>'BOOKED'
             ]);
@@ -171,11 +169,13 @@ class DatLichController extends Controller
                 ]);
                 $tongTien += $dichVu->dongia;
             }
-            if($khuyenMai->loai=='FIXED'){
-                $tongTien=$tongTien-$khuyenMai->giatri;
-            }
-            else if($khuyenMai->loai=='PERCENT'){
-                $tongTien=$tongTien-($tongTien*$khuyenMai->giatri/100);
+            if($khuyenMai){
+                if($khuyenMai->loai=='FIXED'){
+                    $tongTien=$tongTien-$khuyenMai->giatri;
+                }
+                else if($khuyenMai->loai=='PERCENT'){
+                    $tongTien=$tongTien-($tongTien*$khuyenMai->giatri/100);
+                }
             }
             
             $datLich->tongtien = $tongTien;
