@@ -143,4 +143,22 @@ class UserController extends Controller
             ],404);
         }
     }
+
+    //Hủy tài khoản
+    function destroy(String $id){
+        $result=User::where('id','=',$id)->first();
+        if($result){
+            $result->delete();
+            return response()->json([
+                'status'=>true,
+                'message'=>'Hủy tài khoản khách hàng thành công!'
+            ]);
+        }
+        else{
+            return response()->json([
+                'status'=>false,
+                'message'=>'Không tìm thấy khách hàng!'
+            ],404);
+        }
+    }
 }
