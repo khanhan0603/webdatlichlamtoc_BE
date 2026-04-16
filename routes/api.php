@@ -30,9 +30,9 @@ Route::prefix('users')
         });
         Route::middleware(['auth:sanctum','role:USER'])->group(function(){
             Route::get('/{id}','show');
-            Route::post('','getOrCreateUserByPhone');
             Route::put('/{id}','update');
         });
+    Route::post('','getOrCreateUserByPhone');
     Route::post('/register','register');
 });
 
