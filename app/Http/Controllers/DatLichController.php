@@ -232,5 +232,27 @@ class DatLichController extends Controller
         }
     }
 
+    public function indexByUserId(Request $request){
+        $request->validate([
+            'user_id'=>'required|exists:users,id'
+        ],[
+            'user_id.required'=>'Khách hàng không được để trống!',
+            'user_id.exists'=>'Khách hàng không tìm thấy!'
+        ]);
+
+        $dat_lichs=DatLich::where('id_khachhang','=',$request->user_id)->get();
+        try{
+            return response()->json([
+                'status'=>true,
+                'data'=>$dat_lichs
+            ],200);
+        }
+        catch(\Exception $e){
+            return response()->json([
+                'status'=>false,
+                'message'=>$e->getMessage()
+            ],500);
+        }
+    }
     
 }

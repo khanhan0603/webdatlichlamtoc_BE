@@ -128,6 +128,8 @@ Route::prefix('booking')
             Route::post('/khuyen-mai','showKhuyenMai');
             //Đặt lịch
             Route::post('','store');
+            //Xem lich su dat lich
+            Route::post('/user','indexByUserId');
         });
         Route::middleware(['auth:sanctum','role:ADMIN'])->group(function(){
             //Xem tất cả danh sách đặt lịch
