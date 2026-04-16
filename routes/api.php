@@ -96,8 +96,6 @@ Route::prefix('phuong-tiens')
     ->controller(PhuongTienDichVuController::class)
     ->group(function(){
         Route::get('/{id_dich_vu}','index');
-        //Lọc phuong tiên theo dịch vụ(*)
-        Route::post('/dich-vu','indexByDichVu');
         Route::middleware(['auth:sanctum','role:ADMIN'])->group(function(){
             Route::post('','store');
             Route::delete('/{id}','delete');
